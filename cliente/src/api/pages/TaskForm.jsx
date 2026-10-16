@@ -7,6 +7,7 @@ export function TaskForm() {
     const [duracionDias, setDuracionDias] = useState('');
     const [precioPersona, setPrecioPersona] = useState('');
     const [cupoDisponible, setCupoDisponible] = useState('');
+    const [confirmado, setConfirmado] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [guardando, setGuardando] = useState(false);
 
@@ -27,6 +28,7 @@ export function TaskForm() {
                     setDuracionDias(String(paquete.duracion_dias));
                     setPrecioPersona(String(paquete.precio_persona));
                     setCupoDisponible(String(paquete.cupo_disponible));
+                    setConfirmado(paquete.confirmado === true);
                 }
             } catch (error) {
                 if (activo) {
@@ -48,7 +50,8 @@ export function TaskForm() {
             destino: destino.trim(),
             duracion_dias: parseInt(duracionDias),
             precio_persona: parseFloat(precioPersona),
-            cupo_disponible: parseInt(cupoDisponible)
+            cupo_disponible: parseInt(cupoDisponible),
+            confirmado
         };
 
         try {
@@ -134,6 +137,30 @@ export function TaskForm() {
                         className="mt-2 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         placeholder="Ej: 15"
                     />
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3">
+                    <div>
+                        <p className="text-sm font-medium text-slate-800">Paquete confirmado</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                            {confirmado ? 'Este paquete ya está confirmado.' : 'Este paquete está pendiente de confirmación.'}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={confirmado}
+                        onClick={() => setConfirmado((estadoActual) => !estadoActual)}
+                        className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition ${
+                            confirmado ? 'bg-blue-600' : 'bg-slate-300'
+                        }`}
+                    >
+                        <span className="sr-only">Cambiar estado de confirmación</span>
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                                confirmado ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                        />
+                    </button>
                 </div>
                 <div className="flex flex-col-reverse justify-end gap-3 border-t border-slate-100 pt-5 sm:flex-row">
                     <button

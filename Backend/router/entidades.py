@@ -20,6 +20,7 @@ def _serializar_paquete(paquete: dict) -> dict:
     return {
         "id": str(paquete["_id"]),
         **{key: value for key, value in paquete.items() if key != "_id"},
+        "confirmado": paquete.get("confirmado", False),
     }
 
 

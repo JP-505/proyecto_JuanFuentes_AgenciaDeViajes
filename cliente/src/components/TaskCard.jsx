@@ -7,7 +7,18 @@ export function TaskCard({ paquete, onDelete }) {
     return (
         <article className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-200 hover:shadow-md">
             <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Paquete turístico</p>
+                <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Paquete turístico</p>
+                    <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                            paquete.confirmado
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'bg-amber-50 text-amber-700'
+                        }`}
+                    >
+                        {paquete.confirmado ? 'Confirmado' : 'Pendiente'}
+                    </span>
+                </div>
                 <h2 className="mt-2 text-xl font-bold text-slate-900">{paquete.destino}</h2>
                 <dl className="mt-5 space-y-3 text-sm">
                     <div className="flex justify-between gap-3">

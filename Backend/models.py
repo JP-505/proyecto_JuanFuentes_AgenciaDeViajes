@@ -9,6 +9,7 @@ class PaqueteTuristico(BaseModel):
     duracion_dias: int = Field(..., gt=0, example=5)
     precio_persona: float = Field(..., gt=0, example=1200.50)
     cupo_disponible: int = Field(..., ge=0, example=20)
+    confirmado: bool = Field(default=False, example=False)
 
     @field_validator("destino")
     @classmethod
@@ -26,6 +27,7 @@ class PaqueteUpdate(BaseModel):
     duracion_dias: Optional[int] = Field(default=None, gt=0)
     precio_persona: Optional[float] = Field(default=None, gt=0)
     cupo_disponible: Optional[int] = Field(default=None, ge=0)
+    confirmado: Optional[bool] = None
 
     @field_validator("destino")
     @classmethod
