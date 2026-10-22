@@ -1,3 +1,6 @@
+import re
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException, status
 from models import PaqueteTuristico, PaqueteUpdate
 from database import paquetes_collection
@@ -24,6 +27,19 @@ def _serializar_paquete(paquete: dict) -> dict:
     }
 
 
+async def _validar_destino_unico(
+    destino: str, paquete_id: Optional[ObjectId] = None
+):
+    filtro = {"destino": {"$regex": f"^{re.escape(destino)}$", "$options": "i"}}
+    if paquete_id is not None:
+        filtro["_id"] = {"$ne": paquete_id}
+    if await paquetes_collection.find_one(filtro):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ya existe un paquete turístico con ese destino.",
+        )
+
+
 @router.get("/")
 async def listar_paquetes():
     paquetes = await paquetes_collection.find().sort("destino", 1).to_list(length=None)
@@ -45,6 +61,7 @@ async def obtener_paquete(paquete_id: str):
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def crear_paquete(paquete: PaqueteTuristico):
     datos = paquete.model_dump()
+    await _validar_destino_unico(datos["destino"])
     resultado = await paquetes_collection.insert_one(datos)
     return _serializar_paquete({"_id": resultado.inserted_id, **datos})
 
@@ -63,6 +80,14 @@ async def actualizar_paquete(paquete_id: str, paquete: PaqueteUpdate):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Los campos del paquete no pueden ser nulos.",
         )
+    if "destino" in cambios:
+        paquete_existente = await paquetes_collection.find_one({"_id": object_id})
+        if paquete_existente is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No se encontró el paquete turístico.",
+            )
+        await _validar_destino_unico(cambios["destino"], object_id)
 
     paquete_actualizado = await paquetes_collection.find_one_and_update(
         {"_id": object_id},

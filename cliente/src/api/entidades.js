@@ -41,5 +41,8 @@ export const getApiErrorMessage = (error, fallback) => {
             .map((item) => `${item.loc?.slice(1).join('.') || 'Dato'}: ${item.msg}`)
             .join(' ');
     }
+    if (error.response?.status === 409) {
+        return 'Ya existe un paquete turístico con ese destino.';
+    }
     return fallback;
 };
